@@ -3,14 +3,13 @@
 namespace NjoguAmos\Jenga\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Env;
-use phpseclib3\Crypt\RSA;
+use Spatie\Crypto\Rsa\KeyPair;
 
 class JengaKeysCommand extends Command
 {
     protected $signature = 'jenga:keys
                                       {--force : Overwrite keys they already exist}
-                                      {--length=4096 : The length of the private key}';
+                                      {--env=/.env : The environment variable file to be used}';
 
     protected $description = 'Create the encryption keys for Jenga API signature.';
 
@@ -27,14 +26,10 @@ class JengaKeysCommand extends Command
 
             return self::FAILURE;
         } else {
-            $key = RSA::createKey($this->option('length') ? (int) $this->option('length') : 2048);
+            [$privateKey, $publicKey] = (new KeyPair())->generate();
 
-            Env::getRepository()->set('JENGA_PRIVATE_KEY', (string) $key);
-            Env::getRepository()->set('JENGA_PUBLIC_KEY', (string) $key->getPublicKey());
 
             $this->info(trans('jenga::jenga.keys.generated'));
-
-//            $this->info((string) $key->getPublicKey());
 
             return self::SUCCESS;
         }

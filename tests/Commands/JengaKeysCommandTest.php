@@ -1,5 +1,7 @@
 <?php
 
+use Mockery\MockInterface;
+
 test('it generate and replace private and public keys if they do not exists', function () {
     config()->set('jenga.private_key', '');
     config()->set('jenga.public_key', '');
